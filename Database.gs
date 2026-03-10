@@ -892,3 +892,29 @@ function keepAliveSupabase() {
     Logger.log('Errore keepAliveSupabase: ' + e.message);
   }
 }
+function testLogin() {
+  const nickname = "Admin";  // ← metti il nickname reale
+  const pin = "1234";              // ← metti il PIN reale
+  
+  const id = dbGetStaffIdByNickname(nickname);
+  Logger.log("Staff ID trovato: " + id);
+  
+  if (!id) {
+    Logger.log("❌ Nickname non trovato nel database!");
+  } else {
+    Logger.log("✅ Nickname trovato, ID: " + id);
+  }
+}
+function testLoginDettagliato() {
+  const nickname = "Admin";  // ← maiuscola!
+  
+  const url = SB_URL + "/rest/v1/staff?nickname=eq." + encodeURIComponent(nickname) + "&select=id,nickname,codice_pin";
+  Logger.log("URL: " + url);
+  
+  const res = UrlFetchApp.fetch(url, { 
+    headers: { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY }
+  });
+  
+  Logger.log("Status: " + res.getResponseCode());
+  Logger.log("Risposta: " + res.getContentText());
+}

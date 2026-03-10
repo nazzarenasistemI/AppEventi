@@ -18,6 +18,10 @@ function doGet(e) {
       return renderAnnullamento(e);
     }
     
+    if (page === 'modifica') {
+      return renderGestioneCliente(e);
+    }
+    
     if (page === 'login') {
       return createPageOutput('login', "Punta Vida | Login Staff");
     }

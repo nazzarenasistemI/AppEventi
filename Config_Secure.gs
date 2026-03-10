@@ -13,12 +13,12 @@ function setupConfig() {
   
   props.setProperties({
     // ─── SUPABASE ───────────────────────────────────────────
-    'SUPABASE_URL': 'https://dzqhjifxtgeynsqlxahw.supabase.co',
-    'SUPABASE_KEY': 'sb_publishable_m_bsnHy62AaeoYpiD4ycnw_6ED4sgQz',
+    'SUPABASE_URL': 'https://wmntlijzoeisfqxvvkfz.supabase.co',
+    'SUPABASE_KEY': 'sb_publishable_GIKeOwIUMwEX6khlPDM5kg_JgyoOXef',
     
     // ─── APP URL ────────────────────────────────────────────
     // URL pubblico dell'app (dominio custom, Netlify o GAS deploy URL)
-    'APP_URL': 'https://script.google.com/macros/s/AKfycbz5L3NcAJJ7_3wm474L4L008mg3FLDBtzPxwHoNq_zdMao-22fnTE5vC8HB4dgrNjtL/exec',
+   'APP_URL': 'https://script.google.com/macros/s/AKfycbyS60RiWPGpxJuTlkEvDDQMcY75efIpoRIoC9wy2w53rhUwCn3oF_wmUTDwZ_7S_Jua/exec',
     
     // ─── CODA EMAIL ─────────────────────────────────────────
     'EMAIL_QUEUE_SHEET_ID': '1l_b_pEEAkCML2qqf3ruEb2kCu9moCOfoAUYbEo9MQYA',
@@ -26,12 +26,12 @@ function setupConfig() {
     // ─── BRAND ──────────────────────────────────────────────
     'APP_NAME': 'PuntaVida',
     'APP_DOMAIN': 'www.puntavida.com',
-    'CONTACT_EMAIL': 'puntavida.lt@gmail.com',
+    'CONTACT_EMAIL': 'nazzarenasistemi@gmail.com',
     
     // ─── LOGO ───────────────────────────────────────────────
     // URL completo del logo nel bucket Supabase Storage
     // Formato: https://<PROJECT>.supabase.co/storage/v1/object/public/<BUCKET>/<FILE>
-    'LOGO_URL': 'https://dzqhjifxtgeynsqlxahw.supabase.co/storage/v1/object/public/LOGO/Logo.png'
+    'LOGO_URL': 'https://wmntlijzoeisfqxvvkfz.supabase.co/storage/v1/object/public/LOGO/Logo.png'
   });
   
   Logger.log('✅ Configurazione salvata!');
@@ -108,4 +108,15 @@ function updateConfigProperty(key, value) {
   const props = PropertiesService.getScriptProperties();
   props.setProperty(key, value);
   Logger.log('✅ Aggiornato ' + key);
+}
+/**
+ * Configurazione per Console Developer (chiamata da frontend JS)
+ */
+function getDevConsoleConfig() {
+  const config = getConfig();
+  return {
+    SB_PROJECT: config.SB_URL ? config.SB_URL.replace('https://', '').replace('.supabase.co', '') : '',
+    SCRIPT_ID: ScriptApp.getScriptId(),
+    SHEET_ID: config.EMAIL_QUEUE_SHEET_ID || ''
+  };
 }

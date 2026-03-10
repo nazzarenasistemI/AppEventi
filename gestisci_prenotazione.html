@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestisci Prenotazione</title>
+    
+    <?!= include('css_comune'); ?>
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: #1e1e1e;
+            border-radius: 16px;
+            padding: 35px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        h1 { color: #1ed760; margin-bottom: 8px; font-size: 26px; }
+        .subtitle { color: #999; margin-bottom: 25px; font-size: 14px; }
+        
+        .info-box {
+            background: #0d0d0d;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .info-row { margin-bottom: 14px; }
+        .info-row:last-child { margin-bottom: 0; }
+        .info-label {
+            color: #999; font-size: 11px;
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px;
+        }
+        .info-value { color: #fff; font-size: 15px; font-weight: 500; }
+        
+        /* Pasto card */
+        .pasto-card {
+            background: #0d0d0d;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .pasto-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .pasto-status {
+            display: inline-block; padding: 5px 14px;
+            border-radius: 20px; font-size: 13px; font-weight: 600;
+        }
+        .pasto-si { background: rgba(255, 193, 7, 0.15); color: #FFC107; border: 1px solid rgba(255, 193, 7, 0.4); }
+        .pasto-no { background: rgba(153, 153, 153, 0.1); color: #999; border: 1px solid #444; }
+        
+        .pasto-blocco {
+            font-size: 12px; color: #999; margin-top: 8px;
+            padding: 8px 12px; background: rgba(255,255,255,0.03);
+            border-radius: 6px; border-left: 3px solid #555;
+        }
+        
+        .badge-entrato {
+            display: inline-block; padding: 5px 14px;
+            border-radius: 20px; font-size: 13px; font-weight: 600;
+            background: rgba(29, 185, 84, 0.15); color: #1db954;
+            border: 1px solid rgba(29, 185, 84, 0.4);
+        }
+        
+        .btn {
+            width: 100%; padding: 14px; border: none; border-radius: 8px;
+            font-size: 15px; font-weight: bold; cursor: pointer;
+            transition: all 0.3s; margin-bottom: 10px;
+        }
+        .btn-pasto {
+            background: #FFC107; color: #000;
+        }
+        .btn-pasto:hover {
+            background: #ffca2c; transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+        }
+        .btn-rimuovi-pasto {
+            background: transparent; color: #FFC107; border: 1px solid #FFC107;
+        }
+        .btn-rimuovi-pasto:hover {
+            background: rgba(255, 193, 7, 0.1); transform: translateY(-2px);
+        }
+        .btn-danger {
+            background: transparent; color: #dc3545; border: 1px solid #dc3545;
+        }
+        .btn-danger:hover {
+            background: #dc3545; color: #fff; transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+        .btn-secondary {
+            background: transparent; color: #999; border: 1px solid #444;
+        }
+        .btn-secondary:hover { background: #2a2a2a; color: #fff; }
+        
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        
+        .separator { border-top: 1px solid #333; margin: 20px 0; }
+        
+        .spinner {
+            display: none; width: 36px; height: 36px;
+            border: 3px solid rgba(30,215,96,0.15); border-top-color: #1ed760;
+            border-radius: 50%; animation: spin 0.8s linear infinite;
+            margin: 15px auto;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .result-msg {
+            display: none; text-align: center; padding: 30px 10px;
+        }
+        .result-msg h2 { margin-bottom: 12px; }
+        .result-msg p { color: #999; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SEZIONE PRINCIPALE -->
+        <div id="mainSection">
+            <? if (logoUrl) { ?>
+            <div style="text-align:center; margin-bottom:20px;">
+                <img src="<?= logoUrl ?>" alt="Logo" style="max-width:120px; max-height:120px;">
+            </div>
+            <? } ?>
+            <h1>📋 La tua prenotazione</h1>
+            <p class="subtitle">Gestisci i dettagli della tua prenotazione</p>
+            
+            <!-- Info prenotazione -->
+            <div class="info-box">
+                <div class="info-row">
+                    <div class="info-label">Evento</div>
+                    <div class="info-value"><?= evento.nome ?></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Data</div>
+                    <div class="info-value"><?= evento.data ?></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Nome</div>
+                    <div class="info-value"><?= prenotazione.nome ?></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Email</div>
+                    <div class="info-value"><?= prenotazione.email ?></div>
+                </div>
+                <? if (prenotazione.entrato) { ?>
+                <div class="info-row">
+                    <div class="info-label">Stato</div>
+                    <div><span class="badge-entrato">✓ Check-in effettuato</span></div>
+                </div>
+                <? } ?>
+            </div>
+            
+            <!-- Sezione Pasto (solo se l'evento ha pasto) -->
+            <? if (evento.haPasto) { ?>
+            <div class="pasto-card">
+                <div class="pasto-header">
+                    <span style="font-weight:600; font-size:15px;">
+                        🍽️ <?= evento.labelPasto.charAt(0).toUpperCase() + evento.labelPasto.slice(1) ?>
+                    </span>
+                    <? if (prenotazione.includePasto) { ?>
+                        <span class="pasto-status pasto-si">✓ Incluso</span>
+                    <? } else { ?>
+                        <span class="pasto-status pasto-no">✗ Non incluso</span>
+                    <? } ?>
+                </div>
+                
+                <? if (evento.prezzoDanza && evento.prezzoPasto) { ?>
+                <div style="font-size:13px; color:#999; margin-bottom:12px;">
+                    Solo party: €<?= evento.prezzoDanza ?> — Con <?= evento.labelPasto ?>: €<?= evento.prezzoPasto ?>
+                </div>
+                <? } ?>
+                
+                <? if (pasto.modificabile) { ?>
+                    <? if (prenotazione.includePasto) { ?>
+                        <button class="btn btn-rimuovi-pasto" id="btnTogglePasto" onclick="togglePasto(false)">
+                            Rimuovi <?= evento.labelPasto ?>
+                        </button>
+                    <? } else { ?>
+                        <button class="btn btn-pasto" id="btnTogglePasto" onclick="togglePasto(true)">
+                            Aggiungi <?= evento.labelPasto ?>
+                        </button>
+                    <? } ?>
+                <? } else if (pasto.motivoBlocco) { ?>
+                    <div class="pasto-blocco">
+                        ⚠️ <?= pasto.motivoBlocco ?>
+                    </div>
+                <? } ?>
+            </div>
+            <? } ?>
+            
+            <div class="spinner" id="spinner"></div>
+            
+            <!-- Annullamento -->
+            <div class="separator"></div>
+            
+            <? if (!prenotazione.entrato) { ?>
+            <button class="btn btn-danger" id="btnAnnulla" onclick="annullaPrenotazione()">
+                Annulla prenotazione
+            </button>
+            <? } ?>
+            
+            <button class="btn btn-secondary" onclick="window.close()">
+                Chiudi
+            </button>
+        </div>
+        
+        <!-- RISULTATO ANNULLAMENTO -->
+        <div class="result-msg" id="resultAnnulla">
+            <h2 style="color:#1ed760;">✅ Prenotazione Annullata</h2>
+            <p>La tua prenotazione è stata annullata con successo.</p>
+            <p style="margin-top:15px;">Puoi ri-registrarti in qualsiasi momento usando il link originale.</p>
+        </div>
+    </div>
+    
+    <script>
+        var cancelToken = "<?= cancelToken ?>";
+        
+        function setLoading(on) {
+            document.getElementById('spinner').style.display = on ? 'block' : 'none';
+            document.querySelectorAll('.btn').forEach(function(b) { b.disabled = on; });
+        }
+        
+        function togglePasto(nuovoValore) {
+            var label = nuovoValore ? 'aggiungere' : 'rimuovere';
+            if (!confirm('Vuoi ' + label + ' il pasto?')) return;
+            
+            setLoading(true);
+            
+            google.script.run
+                .withSuccessHandler(function(res) {
+                    setLoading(false);
+                    if (res.success) {
+                        alert('✅ ' + res.msg);
+                        // Ricarica la pagina per mostrare lo stato aggiornato
+                        window.location.reload();
+                    } else {
+                        alert('❌ ' + res.msg);
+                    }
+                })
+                .withFailureHandler(function(err) {
+                    setLoading(false);
+                    alert('❌ Errore di sistema. Riprova.');
+                })
+                .clienteTogglePasto(cancelToken, nuovoValore);
+        }
+        
+        function annullaPrenotazione() {
+            if (!confirm('Sei sicura di voler annullare la prenotazione? Potrai ri-registrarti in seguito.')) return;
+            
+            setLoading(true);
+            
+            google.script.run
+                .withSuccessHandler(function(res) {
+                    setLoading(false);
+                    if (res.success) {
+                        document.getElementById('mainSection').style.display = 'none';
+                        document.getElementById('resultAnnulla').style.display = 'block';
+                    } else {
+                        alert('❌ ' + res.msg);
+                    }
+                })
+                .withFailureHandler(function(err) {
+                    setLoading(false);
+                    alert('❌ Errore di sistema. Riprova.');
+                })
+                .confermaAnnullamento(cancelToken);
+        }
+    </script>
+</body>
+</html>
